@@ -51,8 +51,8 @@ extensions = [
 
 confluence_publish = True
 confluence_space_key = os.environ.get("CONFLUENCE_SPACE_KEY")
-confluence_url = os.environ.get("CONFLUENCE_URL")
-confluence_username = os.environ.get("CONFLUENCE_USERNAME")
+confluence_server_url = os.environ.get("CONFLUENCE_URL")
+confluence_server_user = os.environ.get("CONFLUENCE_USERNAME")
 confluence_api_token = os.environ.get("CONFLUENCE_API_KEY")
 confluence_ask_password = False
 parent_id = os.environ.get("CONFLUENCE_PARENT_PAGE_KEY")
@@ -60,16 +60,16 @@ if parent_id:
     confluence_parent_page = int(parent_id)
 
 
-if not confluence_url:
+if not confluence_server_url:
     print(
-        "ERROR: confluence_url is missing. Check your .env file or variable names."
+        "ERROR: confluence_server_url is missing. Check your .env file or variable names."
     )
 
 # -----------------------------------------------------------------------------
 # 3. Debugging (Verify variables are loaded)
 # -----------------------------------------------------------------------------
-print(f"DEBUG: URL: {confluence_url}")
-print(f"DEBUG: User: {confluence_username}")
+print(f"DEBUG: URL: {confluence_server_url}")
+print(f"DEBUG: User: {confluence_server_user}")
 # Don't print the full token, just check length
 if confluence_api_token:
     print(f"DEBUG: Token loaded (length: {len(confluence_api_token)})")
