@@ -13,10 +13,6 @@ https://docs.djangoproject.com/en/4.2/ref/settings/
 from pathlib import Path
 import os
 
-from dotenv import load_dotenv
-
-load_dotenv()
-
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent.parent
@@ -27,13 +23,13 @@ BASE_DIR = Path(__file__).resolve().parent.parent.parent
 
 # SECURITY WARNING: keep the secret key used in production secret!
 # SECRET_KEY = 'django-insecure-kpeyj_@u2=l+kubmttspam+qgbs&zcjpw2#))c$g5z0pzf_@2$'
-SECRET_KEY = os.environ.get("DJANGO_SECRET_KEY", "unsafe-dev-secret-key")
+SECRET_KEY = 'django-insecure-kpeyj_@u2=l+kubmttspam+qgbs&zcjpw2#))c$g5z0pzf_@2$'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-# DEBUG = True
-DEBUG = os.environ.get("DJANGO_DEBUG", "false").lower() == "true"
+#DEBUG = True
 
-# DEBUG = False
+
+DEBUG = False
 
 # ALLOWED_HOSTS = ['0.0.0.0',
 #                  'localhost',
@@ -41,9 +37,11 @@ DEBUG = os.environ.get("DJANGO_DEBUG", "false").lower() == "true"
 #                  'audience-attributes-22795880007.us-central1.run.app',
 #                  ]
 
-ALLOWED_HOSTS = os.environ.get(
-    "DJANGO_ALLOWED_HOSTS", "localhost,127.0.0.1,0.0.0.0"
-).split(",")
+ALLOWED_HOSTS = ['0.0.0.0', 
+                 'localhost', 
+                 '127.0.0.1', 
+                 'audience-attributes-22795880007.us-central1.run.app',
+                 ]
 
 
 # Application definition
