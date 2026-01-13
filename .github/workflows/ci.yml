@@ -71,7 +71,7 @@ jobs:
       - name: Type check with mypy
         run: |
           cd functions
-          poetry run mypy my_function
+          poetry run mypy functions/my_function
 
       # 8. Run Tests
       - name: Run unit tests
