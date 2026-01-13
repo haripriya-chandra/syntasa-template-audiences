@@ -1,0 +1,236 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Customer Audience Agent</title>
+    <link rel="stylesheet" href="{% static 'styles.css' %}">
+    <link rel="shortcut icon" href="#">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-dark.min.css">
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/sql.min.js"></script>
+
+</head>
+<body>
+   <div class="top-bar">
+    <div class="title-header">
+         <i class="fas fa-bars menu-icon" id="menuToggle"></i>
+      <span class="app-title">CUSTOMER AUDIENCE AGENT</span>
+    </div>
+    <div class="user-info">
+      <span>Welcome back, Sam</span>
+     <span class="date" id="current-date"></span>
+    </div>
+    <script>
+
+  // Get today's date
+  const today = new Date();
+
+  // Format options
+  const options = { weekday: 'long', month: 'short', day: 'numeric', year: 'numeric' };
+
+  // Format and display
+  document.getElementById('current-date').textContent = today.toLocaleDateString('en-US', options);
+</script>
+  </div>
+    <div class="app-container">
+
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <nav class="sidebar-nav">
+                <ul>
+                    <li class="sidebar-search"> <i class="fas fa-search"></i> <input type="text" placeholder="Search queries..."> </li>
+                    <li><a href="#"><i class="fas fa-database"></i> Query Builder</a></li>
+                    <li><a href="#"><i class="fas fa-chart-bar"></i> Analytics</a></li>
+                    <li><a href="#"><i class="fas fa-folder-open"></i> Data Sources</a></li>
+                     <li><a href="#"><i class="fas fa-layer-group"></i> Templates</a></li>
+                    <li><a href="#"><i class="fas fa-cog"></i> Settings</a></li>
+                </ul>
+            </nav>
+        </aside>
+
+        <!-- Main Content Area -->
+        <main class="main-content">
+
+            <!-- Query Input Section -->
+            <div class="query-input-section card">
+                 <div class="query-header">
+                <h3>Audience Generation Question</h3>
+                   <div class="info-container">
+            <span class="info-icon" onclick="toggleInfo()"><i class="fas fa-info-circle"></i></span>
+            <div id="info-card" class="info-card hidden"> 
+This AI converts plain English into precise audience definitions. It can handle complex segmentation requests, but results depend on how clearly you describe your intent. Be as specific as possible--extra context always helps.</div>
+        </div>
+         </div>
+                <!-- Text is now inside the textarea for pre-filling -->
+                <textarea id="question" name="question" 
+                placeholder="Enter your question...
+Examples: users who viewed electronics products
+          users who used discount coupon
+          Users who might be interested in fitness products"></textarea>
+                <button id="generate-sql-button" class="btn-primary">Generate Audience</button>
+            </div>
+
+           <div id="loading-indicator" class="loading-indicator hidden">
+            <p id="progress-messages">Generating Audience...</p>
+            <div class="spinner"></div>
+            </div>
+        
+            <!-- Query Explanation Section -->
+            <div id="attribute-explanation-section" class="card attribute-explanation">
+                <div class="explanation-header">
+                    <h3>Generated Audience</h3>
+                </div>
+                <div class="card explanation-content">
+                    <p></p>
+                   
+                    <div class="explanation-tags hidden" id="explanation-tags">
+                    </div>
+
+                    <div class="query-footer-container" id="query-footer-container">
+                    <div class="query-feedback-buttons hidden">
+                        <div class="feedback-row">
+                        <button class="btn helpful" id="helpful-btn">👍 Helpful</button>
+                        <button class="btn not-helpful" id="not-helpful-btn">👎 Not Helpful</button>
+                        <textarea id="feedback-input" placeholder="Add any feedback text..."></textarea>
+                       </div>
+                       
+                <div class="feedback-message-container">
+                <p id="feedback-message"></p>
+                </div>
+                    </div>
+                   
+                </div>
+                    </div>
+                    <div class="audience-data" id="audience-data">
+                         <h4>Audience Data</h4>
+                      <div class="card data-content">
+                         
+                    <p></p>
+                    </div>
+                     </div>
+                    <div class="tab-content active" id="data-sources">
+                        <h4 style="display: flex; align-items: center; justify-content: space-between; cursor: pointer;"
+                            onclick="toggleDataSources()">
+                            Data Sources Used
+                            <span id="data-toggle-icon" class="fas" 
+                                style="font-family: 'Font Awesome 5 Free'; font-weight: 900; font-size: 16px; margin-left: 18px;">
+                            &#xf078; 
+                            </span>
+                        </h4>
+
+                        <!-- Collapsible content wrapper -->
+                        <div id="data-sources-content" class="collapsible-content collapsed" style="display: none;">
+                        <div class="data-sources-grid">
+                          
+                       <div class="data-card used">
+                         <div class="card-inner hidden">
+                            <h4><i class="fas fa-table"></i> campaigns </h4>
+                            <ul>
+                                <li>campaign_id</li>
+                                <li><strong>campaign_name</strong></li>
+                                <li>start_date</li>
+                                <li>end_date</li>
+                                <li>budget</li>
+                                <li>channel_id</li>
+                            </ul>
+                        </div>
+                        </div>
+                        <div class="data-card used">
+                            <div class="card-inner hidden">
+                            <h4><i class="fas fa-table"></i> leads </h4>
+                            <ul>
+                                <li>lead_id</li>
+                                <li>campaign_id</li>
+                                <li>customer_id</li>
+                                <li>created_at</li>
+                                <li>source</li>
+                            </ul>
+                        </div>
+                        </div>
+                        <div class="data-card used">
+                            <div class="card-inner hidden">
+                            <h4><i class="fas fa-table"></i> conversions </h4>
+                            <ul>
+                                <li>conversion_id</li>
+                                <li>lead_id</li>
+                                <li>conversion_date</li>
+                                <li><strong>conversion_value</strong></li>
+                                <li>conversion_type</li>
+                            </ul>
+                        </div>
+                        </div>
+                        <div class="data-card">
+                            <div class="card-inner hidden">
+                            <h4><i class="fas fa-table"></i> customers</h4>
+                            <ul>
+                                <li>customer_id</li>
+                                <li>email</li>
+                                <li>signup_date</li>
+                                <li>segment</li>
+                            </ul>
+                        </div>
+                        </div>
+                      </div>
+                    </div>
+                    <div class="tab-content" id="queries">  
+                    </div>
+                    <div class="tab-content" id="conversions">
+                    </div>
+                    <div class="tab-content" id="join">
+                    </div>
+                    <div class="tab-content" id="filter">    
+                    </div>   
+            </div>
+        </div>
+            <!-- Generated SQL Section -->
+            <div class="generated-sql-section card">
+                <div class="sql-header">
+                    <h3>Generated Filter Clause</h3>
+                    <div class="sql-actions">
+                    </div>
+                </div>
+                <div class="sql-code-block">
+                      <pre><code id="sql_code_output" class="language-sql"></code></pre>
+                </div>
+            </div>
+            <div id="loading-indicator-plots" class="loading-indicator-plots hidden">
+              
+                <p>Plotting the visualizations ...</p>
+                  <div class="spinner"></div>
+            </div>
+            <div id="visualization-section"></div>
+
+        </main>
+    </div>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <p>Powered By Syntasa&trade;</p>
+    </footer>
+    <script>
+        function toggleDataSources() {
+        const content = document.getElementById("data-sources-content");
+        const icon = document.getElementById("data-toggle-icon");
+        const isCollapsed = content.style.display === "none";
+
+        if (isCollapsed) {
+            // Expand
+            content.style.display = "block";
+            setTimeout(() => content.classList.remove("collapsed"), 10);
+            icon.innerHTML = "&#xf078;"; // chevron-down
+        } else {
+            // Collapse
+            content.classList.add("collapsed");
+            icon.innerHTML = "&#xf077;"; // chevron-up
+            setTimeout(() => content.style.display = "none", 300);
+        }
+        }
+        </script>
+  
+    <script src="{% static 'scripts.js' %}?v={{ timestamp }}"></script>
+</body>
+</html>

@@ -1,0 +1,1033 @@
+/* --- General Styles --- */
+:root {
+    --primary-green: #45b388;
+    --secondary-green-hover: #059669;
+    --dark-background: #f9f9f9;
+    --card-background: #3b3b3b;
+    --input-background: #4b4b4b;
+    --text-color-light: #f9f9f9;
+    --text-color-dark: #333;
+    --border-color: #d9d0d0;
+    --hover-highlight: #7bdcb5;
+}
+
+body {
+    margin: 0;
+    font-family: 'Inter', 'Arial', sans-serif; /* Using a modern font stack */
+    background-color: #f9f9f9;
+    color: var(--text-color-light);
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+}
+
+.app-container {
+    display: flex;
+    flex: 1; /* Allows main content to grow and push footer down */
+}
+
+.card {
+    background-color: var(--card-background);
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+    padding: 25px;
+    margin-bottom: 20px;
+    border: 1px solid var(--border-color);
+}
+
+h1, h2, h3, h4, h5, h6 {
+    color: var(--text-color-light);
+    margin-top: 0;
+}
+
+h3 {
+    font-size: 1.3em;
+    margin-bottom: 15px;
+    font-weight: 600;
+}
+
+/* --- Buttons --- */
+.btn-primary {
+    background-color: var(--primary-green);
+    color: var(--text-color-light);
+    border: none;
+    padding: 12px 15px;
+    font-size: 18px;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s ease, transform 0.2s ease;
+    font-weight: 500;
+}
+
+.btn-primary:hover {
+    background-color: var(--secondary-green-hover);
+    transform: translateY(-2px);
+}
+
+.btn-secondary {
+    background-color: white;
+    color: black;
+    border: 1px solid var(--border-color);
+    padding: 12px 15px;
+    font-size: 15px;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s ease, border-color 0.3s ease;
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    font-weight: 500;
+}
+
+.btn-secondary:hover {
+  
+    background-color: #f2f3f4;
+    border-color: black;
+}
+
+
+/* --- Sidebar --- */
+.sidebar {
+    width: 18%;
+    background-color: var(--secondary-green-hover); /* Slightly darker than body background */
+    border-right: 1px solid var(--border-color);
+    display: flex;
+    flex-direction: column;
+    padding: 20px 0;
+    box-shadow: 2px 0 10px rgba(0, 0, 0, 0.3);
+}
+.results-actions .btn-secondary1{
+  color: #ffffff;
+    background-color: #6e8cf7;
+    border: 1px solid var(--border-color);
+    padding: 12px 15px;
+    font-size: 15px;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s ease, border-color 0.3s ease;
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    font-weight: 500;
+}
+.results-actions .btn-secondary2{
+  color: #ffffff;
+    background-color: rgb(209, 60, 209);
+    border: 1px solid var(--border-color);
+    padding: 12px 15px;
+    font-size: 15px;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s ease, border-color 0.3s ease;
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    font-weight: 500;
+}
+.btn-secondary1:hover {
+    background-color: #1838a9;
+  
+}
+.btn-secondary2:hover {
+    background-color: rgb(143, 28, 143);
+  
+}
+.sidebar-header {
+    display: flex;
+    align-items: center;
+    padding: 0 20px 20px 20px;
+    border-bottom: 1px solid var(--border-color);
+    margin-bottom: 20px;
+}
+
+.logo {
+    width: 30px;
+    height: 30px;
+    margin-right: 12px;
+}
+
+.app-title {
+    font-size: 1.2em;
+    font-weight: 700 bold;
+    color: var(--primary-green);
+}
+
+.sidebar-nav ul {
+    list-style: none;
+    padding: 0 20px;
+    margin: 0;
+}
+
+.sidebar-nav li {
+    margin-bottom: 5px;
+}
+
+.sidebar-nav a {
+    display: flex;
+    align-items: center;
+    padding: 12px 15px;
+    border-radius: 6px;
+    color: #e7e3e3; /* Lighter text for nav items */
+    text-decoration: none;
+    transition: background-color 0.2s ease, color 0.2s ease;
+    font-size: 15px;
+}
+
+.sidebar-nav a i {
+    margin-right: 15px;
+    font-size: 1.0em;
+    width: 20px; /* Align icons */
+    text-align: center;
+    color: #e7e3e3;
+
+}
+
+.sidebar-nav a:hover {
+    color: var(--text-color-light);
+}
+
+.sidebar-nav li.active a {
+    background-color: var(--primary-green);
+    color: white;
+    font-weight: 500;
+}
+.sidebar-nav li.sidebar-search {
+    display: flex;
+    align-items: center;
+    padding: 8px 12px;
+    font-size: 16px;
+    background-color: #0e7653;
+    margin-bottom: 20px;
+}
+
+.sidebar-nav li.sidebar-search i {
+    margin-right: 10px;
+    color: #bbb;
+}
+
+.sidebar-nav li.sidebar-search input {
+   
+    padding: 6px 8px;
+    background: none;
+    color: #e7e3e3;
+    font-size: 16px;
+}
+.sidebar-search input {
+  flex: 1;
+  border: none; /* remove default border */
+  outline: none; /* remove focus highlight */
+  background: transparent; /* make it match sidebar background */
+  color: #faf1f1; /* text color */
+  font-size: 14px;
+}
+.sidebar-search input::placeholder {
+   color: #bbb;  
+}
+
+/* --- Main Content --- */
+.main-content {
+    flex: 1;
+    padding: 30px;
+    overflow-y: auto; /* Allow scrolling if content exceeds height */
+     width: 95%;   
+}
+
+
+.main-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 30px;
+    padding-bottom: 20px;
+}
+
+.menu-icon {
+  font-size: 22px;
+  cursor: pointer;
+ color: #ccc;
+align-items: center;
+}
+
+.app-title {
+  font-size: 20px;
+  font-weight: bold;
+}
+
+.user-info {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between; 
+    align-items: center; 
+    font-size: 10px;
+}
+
+.user-info span {
+    color: #ccc;
+}
+
+.user-info .date {
+    font-size: 10px;
+    color: #888;
+}
+
+/* --- Query Input Section --- */
+.query-input-section {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start; 
+    background-color: #ffffff;
+    color: black;
+}
+
+.info-container {
+    position: relative; 
+    display: inline-block;
+}
+
+.info-icon {
+    cursor: pointer;
+    font-size: 20px;
+    margin-left: 8px;  
+}
+
+/* Floating card/tooltip */
+.info-card {
+    position: absolute;
+    top: 125%; /* slightly below the icon */
+    right: 0;  /* align to the right edge of the icon */
+    width: 350px;
+    padding: 10px;
+    border-radius: 8px;
+    background: #f3f9fc;
+    border: 1px solid #ddd;
+    box-shadow: 0px 2px 8px rgba(0,0,0,0.2);
+    font-size: 14px;
+    color: #333;
+    z-index: 1000;
+}
+
+/* little arrow pointer */
+.info-card::before {
+    content: "";
+    position: absolute;
+    top: -6px;
+    right: 8px;
+    border-width: 6px;
+    border-style: solid;
+    border-color: transparent transparent #f8f9fa transparent;
+}
+
+.query-header {
+    display: flex;
+    justify-content: space-between; /* h3 left, icon right */
+    align-items: center; /* vertically align */
+    width: 100%; /* span full width of parent */
+    margin-bottom: 15px; /* space below header */
+}
+
+.query-input-section h3 {
+  background-color: #ffffff;
+  color: black;
+  font-size: 20px;
+  font-weight: 600;
+}
+
+.query-input-section textarea {
+    width: 100%;
+    height: 120px; /* Slightly smaller than before */
+    padding: 15px;
+    font-size: 17px;
+    background-color: #ffffff;
+    color: black;
+    outline: none;
+    resize: vertical;
+    margin-bottom: 15px;
+    box-sizing: border-box; /* Include padding in width */
+}
+
+.query-input-section textarea::placeholder {
+    color: #888; /* Lighter placeholder text */
+    font-size: 15px;
+}
+
+.query-input-section .btn-primary {
+    align-self: flex-start; /* Aligns button to the right */
+    padding-left: 15px;
+    padding-right: 15px;
+}
+
+.message-line {
+    margin: 5px 0;
+    font-size: 14px;
+    display: flex;
+    align-items: center;
+    color: black;
+}
+
+.spinner {
+    width: 14px;
+    height: 14px;
+    border: 2px solid #ccc;
+    border-top: 2px solid #333;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+    margin-right: 6px;
+}
+
+.loading-indicator {
+    display: flex;
+    flex-direction: row;  /* side by side */
+    align-items: center;  /* align vertically */
+    gap: 10px; /* spacing between text and spinner */
+    margin-top: 10px;
+    justify-content: center; 
+}
+
+.loading-indicator p {
+    display: inline; /* force inline so it always shows */
+    color: #6e6d6d;
+    font-size: 17px;
+    padding-top: 2px;
+}
+
+.loading-indicator-plots {
+    display: flex;
+    flex-direction: row;  /* side by side */
+    align-items: center;  /* align vertically */
+    gap: 10px; /* spacing between text and spinner */
+    margin-top: 10px;
+    justify-content: center; 
+    margin-left: 2px;
+ 
+}
+
+.loading-indicator-plots p {
+    display: inline; /* force inline so it always shows */
+    color: #6e6d6d;
+    font-size: 17px;
+    padding-top: 2px;
+}
+
+.spinner {
+    width: 20px;
+    height: 20px;
+    border: 5px solid #ccc;
+    border-top-color: var(--primary-green);
+    border-radius: 80%;
+    animation: spin 1s linear infinite;
+    margin-left: 2px;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.attribute-explanation{
+  background: #fff8e6;
+}
+
+/* --- Query Explanation Section --- */
+.attribute-explanation .explanation-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 15px;
+    color: #92400e;  
+}
+
+.attribute-explanation .explanation-header h3 {
+   font-size: 20px;
+    font-weight: 600;
+    color: #92400e;
+}
+
+.attribute-explanation .confidence {
+    font-size: 16px;
+    color: #ccc;
+    display: flex;
+    align-items: center;
+    color: #92400e;
+}
+
+.attribute-explanation .confidence .stars {
+    color: var(--primary-green);
+    margin-left: 5px;
+    margin-right: 5px;
+    font-size: 1.0em;
+}
+
+.attribute-explanation .confidence .stars i {
+    margin: 0 2px;
+}
+
+.attribute-explanation .explanation-content p {
+    font-size: 16px;
+    min-height: 135px;
+    line-height: 1.6;
+    color: #92400e;
+    margin-bottom: 10px;
+    
+}
+.attribute-explanation .explanation-content{
+background-color: white;
+min-height: 135px;
+}
+
+.audience-data .data-content{
+background-color: white;
+min-height: 75px;
+}
+.audience-data .data-content p {
+    font-size: 16px;
+    min-height: 75px;
+    line-height: 1.6;
+    color: #92400e;
+    margin-bottom: 10px;
+    
+}
+.audience-data h4{
+    color: black;
+    font-size: 18px;
+    font-weight: 600;
+    padding-top: 15px;
+}
+#attribute-name-heading {
+  font-size: 1.3rem;
+  font-weight: bold;
+  margin: 10px 0 8px;
+  color: #333;
+}
+
+.description-card {
+  margin-top: 8px;
+  padding: 12px;
+  background: #f9f9f9;
+  border-radius: 6px;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.1);
+}
+
+
+.explanation-tabs {
+    display: flex;
+    flex-wrap: wrap; /* Allow tabs to wrap on smaller screens */
+    gap: 10px;
+    margin-bottom: 15px;
+    border-bottom: 1px solid var(--border-color);
+    padding-bottom: 10px;
+}
+
+.explanation-tabs .tab.active {
+    background-color: var(--input-background);
+    color: black;
+}
+
+.explanation-tabs .tab:hover {
+    background-color: #404040;
+    color: var(--text-color-light);
+}
+
+/* Tags (Chips) Styling */
+.explanation-tags {
+    display: flex;
+    flex-wrap: wrap; /* Allow tags to wrap */
+    gap: 10px; /* Space between tags */
+    margin-bottom: 20px;
+    align-items: center;
+}
+
+.explanation-tags .tag {
+    display: inline-flex;
+    align-items: center;
+    padding: 6px 15px;
+    border-radius: var(--tag-border-radius);
+    font-size: 14px;
+    font-weight: 500;
+    color: black;
+    background-color: #f3f4f6; /* Light gray background */
+    border: 1px solid black; /* For potential border styling */
+    margin-top: 18px;
+    transition: background-color 0.2s ease, color 0.2s ease;
+    cursor: default; /* Not clickable unless you add click handlers */
+    margin-bottom: 8px;
+}
+
+.explanation-tags .tag i {
+    margin-right: 8px;
+    font-size: 1em;
+}
+
+/* Feedback Buttons Styling */
+.query-feedback-buttons {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin-bottom: 2px;
+    justify-content: flex-start; 
+    height: 52px;     
+}
+
+.query-feedback-buttons .btn {
+    background-color: #ffffff;
+    color: black;
+    border: 1px solid #a19d9d;
+    padding: 12px 15px;
+    font-size: 14px;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s ease, border-color 0.3s ease;
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    font-weight: 500;  
+}
+
+.query-feedback-buttons .btn:hover {
+    background-color: #f2f3f4;
+    border-color: black;
+}
+
+.query-feedback-buttons .btn i {
+    font-size: 1.0em;
+}
+
+.feedback-row {
+    display: flex;
+    align-items: center;
+    gap: 10px; /* spacing between buttons and textarea */
+}
+
+#feedback-input {
+    flex: 1; 
+    width: 470px;
+    border: 1px solid #a19d9d;
+    border-radius: 8px;
+    padding: 8px 10px;
+    font-size: 14px;
+    align-items: center;
+    transition: border-color 0.2s ease-in-out;
+}
+
+#feedback-input::placeholder {
+    color: #888;
+    align-items: center;
+}
+
+#feedback-input:focus {
+    outline: none;
+    border-color: black; /* Indigo focus */
+    box-shadow: 0 0 4px black;
+}
+
+#feedback-message {
+    margin-top: 8px;
+    margin-bottom: 12px; 
+    font-style: italic;
+    color: black;
+    padding-bottom: 12px;
+}
+
+.query-footer-container {
+    display: flex;
+    justify-content: space-between;
+    align-items: center; /* vertically centers buttons and text */
+    margin-top: 10px; /* optional spacing */
+    padding-bottom: 20px; 
+}
+
+.feedback-message-container {
+  padding-bottom: 16px; /* ensures visible space below message */
+}
+
+.tab-content {
+    display: none; /* Hidden by default */
+    padding-top: 15px;
+}
+
+.tab-content h4{
+    color: black;
+    font-size: 18px;
+    font-weight: 600;
+}
+
+.tab-content.active {
+    display: block;
+}
+
+/* Grid for data sources */
+.data-sources-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr); /* Always 2 cards per row */
+    gap: 1rem;
+    margin-top: 1rem;
+}
+
+/* Each card */
+.data-card {
+    min-height: 120px;
+    background: #fff8e6;
+    border: 3px solid #f7cc5f;
+    border-radius: 8px;
+    padding: 0.4rem;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    color: black;
+}
+
+.data-card h4 {
+    font-size: 15px;
+    margin-bottom: 0.5rem;
+    color: #333;
+    display: flex;
+    align-items: center;
+    gap: 0.3rem;
+    color: #92400e;
+}
+
+.data-card ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.data-card ul li {
+    font-size: 15px;
+}
+
+.card-inner .fa-table {
+  font-size: 12px; 
+}
+
+.attribute-explanation .explanation-footer {
+    text-align: center;
+    margin-top: 20px;
+    font-size: 12px;
+    color: var(--primary-green);
+    cursor: pointer;
+    text-decoration: underline;
+    margin: 0;
+}
+
+.why-query-link {
+    text-decoration: none; /* remove underline */
+    color: var(--primary-green); /* link color, adjust as needed */
+    font-weight: 500;
+    font-size: 12px;
+}
+
+.why-query-link:hover {
+    text-decoration: underline;
+}
+
+.generated-sql-section{
+  background-color: #ffffff;
+}
+
+/* --- Generated SQL Section --- */
+.generated-sql-section .sql-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 15px;
+}
+
+.generated-sql-section .sql-header h3{
+   color: black;
+    font-size: 20px;
+    font-weight: 600;
+}
+
+.generated-sql-section .sql-actions {
+    display: flex;
+    gap: 10px;
+    background-color: #ffffff;
+    color: black;
+}
+
+.sql-code-block {
+    min-height: 250px; 
+    background-color: #212121; /* Very dark background for code */
+    border: 1px solid #444;
+    border-radius: 5px;
+    padding: 15px;
+    overflow-x: auto; /* Horizontal scroll for long lines */
+}
+
+.sql-code-block pre {
+    margin: 0;
+    padding: 0;
+    white-space: pre-wrap; /* Wrap long lines */
+    word-wrap: break-word;
+    font-family: 'Consolas', 'Monaco', 'Andale Mono', 'Ubuntu Mono', monospace;
+    font-size: 16px;
+    line-height: 1.5;
+}
+
+.sql-code-block code {
+    color: #f9f9f9; /* Default text color */
+}
+
+.hljs-keyword { color: #d7afff; font-weight: bold; } 
+.hljs-string  { color: #a8ffcc; } 
+.hljs-number  { color: #ffccaa; } 
+
+.query-results-section{
+  background-color: #ffffff;
+}
+
+/* --- Query Results Section --- */
+.query-results-section .results-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 15px;
+}
+
+.query-results-section .results-header h3{
+  color: black;
+    font-size: 20px;
+    font-weight: 600;
+}
+
+.query-results-section .results-actions {
+    display: flex;
+    gap: 10px;
+}
+
+.query-input-section {
+    display: flex;
+    flex-direction: column; /* Stack textarea and button vertically */
+    align-items: flex-end; /* Aligns button to the right */
+     background-color: #ffffff;
+    color: black;
+}
+
+.query-input-section textarea {
+    width: 100%;
+    height: 120px;
+    padding: 15px;
+    font-size: 16px;
+    border: 1px solid var(--border-color);
+    border-radius: 5px;
+    background-color: #ffffff;
+    color: black;
+    outline: none;
+    resize: vertical;
+    margin-bottom: 15px; /* Space between textarea and button */
+    box-sizing: border-box;
+}
+
+.query-input-section textarea::placeholder {
+    color: #888;
+    font-size: 15px;
+}
+
+.dashboard-card {
+    margin-bottom: 20px;
+    padding: 15px;
+    background: #fff;
+    border-radius: 12px;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+}
+
+.dashboard-header h4 {
+    margin-bottom: 10px;
+}
+
+.dashboard-body img {
+    display: block;
+    margin: auto;
+}
+
+.results-table-container {
+    min-height: 200px;
+    overflow-x: auto; /* Enable horizontal scrolling for the table */
+}
+
+#results-table {
+    width: 100%;
+    border-collapse: collapse;
+    min-width: 600px; /* Ensure a minimum width to test horizontal scroll */
+    background-color: #ffffff;
+    color: black;
+}
+
+#results-table th,
+#results-table td {
+    border: 1px solid #ece3e3;
+    padding: 12px 15px;
+    text-align: left;
+    white-space: nowrap; /* Prevent text wrapping in cells */
+      background-color: #ffffff;
+    color: black;
+    font-size: 14px;
+}
+
+#results-table thead th {
+    background-color: var(--card-background); /* Same as card background */
+    color: var(--text-color-light);
+    font-weight: 600;
+    border-top: none; /* Remove top border */
+    border-bottom: 2px solid var(--primary-green); /* Green underline for header */
+    position: sticky; /* Keep header visible on scroll */
+    top: 0;
+    z-index: 1;
+    background-color: #ffffff;
+    color: black;
+    font-size: 14px;
+}
+
+#results-table tbody tr:nth-child(even) {
+    background-color: #333; /* Darker for even rows */
+}
+
+#results-table tbody tr:nth-child(odd) {
+    background-color: #3b3b3b; /* Card background for odd rows */
+}
+
+#results-table tbody tr:hover {
+    background-color: #505050; /* Hover effect */
+}
+
+.more-results {
+    text-align: center;
+    font-style: italic;
+    color: #888;
+}
+
+/* --- Footer --- */
+.footer {
+    text-align: center;
+    padding: 20px;
+    margin-top: auto; /* Push footer to the bottom */
+    color: #656464;
+    font-size: 14px;
+}
+
+.top-bar {
+    display: flex;
+    justify-content: space-between; /* pushes left & right */
+    align-items: center; /* vertically centers */
+    padding: 10px 20px;        
+    border-bottom: 1px solid var(--border-color);
+    padding-top: 16px;
+}
+
+.menu-icon {
+    font-size: 20px;
+    cursor: pointer;
+    color: #ccc;
+    gap: 10px;
+    margin-right: 12px; 
+}
+
+.app-title {
+    font-size: 20px;
+    font-weight: bold;
+}
+
+.user-info {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between; 
+    align-items: center; 
+    font-size: 16px;
+    color: #555;
+    gap: 10px; /* spacing between text and date */
+}
+
+.user-info .date {
+    font-size: 14px; /* smaller text */
+    color: #777; /* lighter color */
+    font-weight: 400; /* less emphasis */
+}
+
+/* --- Utility Classes --- */
+.hidden {
+    display: none !important;
+}
+
+ .title-header {
+    padding: 0;
+    margin-bottom: 0;
+    justify-content: space-between;
+    display: flex;
+    align-items: center;     
+}
+
+.title-header .menu-icon {
+    font-size: 18px;       /* tweak size if needed */
+    margin-right: 8px;     /* spacing from NL2SQL */
+    line-height: 1;        /* avoid extra vertical space */
+    display: flex;         /* ensures perfect centering */
+    align-items: center;   /* vertically centers the icon itself */
+    justify-content: space-between;
+    color: rgb(137, 131, 131);
+}
+
+/* --- Responsive Adjustments --- */
+@media (max-width: 992px) {
+    .app-container {
+        flex-direction: column;
+    }
+    .sidebar {
+        width: 100%;
+        max-height: 80px; /* Collapsed sidebar on small screens */
+        overflow: hidden;
+        padding: 10px 20px;
+    }
+    .title-header {
+        padding: 0;
+        margin-bottom: 0;
+        justify-content: space-between;
+        display: flex;
+        align-items: center;  
+      
+    }
+     .title-header i {
+        padding-bottom: 10px;   
+    }
+
+.title-header .menu-icon {
+    font-size: 18px;       /* tweak size if needed */
+    margin-right: 8px;     /* spacing from NL2SQL */
+    line-height: 1;        /* avoid extra vertical space */
+    display: flex;         /* ensures perfect centering */
+    justify-content: space-between;
+    align-items: center;   /* vertically centers the icon itself */
+}
+    .sidebar-nav {
+        display: none; /* Hide nav by default on small screens */
+    }
+    .main-header {
+        flex-direction: column;
+        gap: 15px;
+    }
+    .main-content {
+        padding: 15px;
+    }
+    .card {
+        padding: 15px;
+    }
+    .query-input-section textarea {
+        font-size: 16px;
+    }
+    .btn-primary {
+         padding-left: 15px;
+         padding-right: 15px;
+    }
+    .generated-sql-section, .query-results-section {
+        margin-bottom: 15px;
+    }
+}
+.footer {
+  text-align: center;
+  padding: 15px 20px;
+ border: 1px solid var(--border-color);
+ 
+}
+/* --- Keyframes --- */
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}

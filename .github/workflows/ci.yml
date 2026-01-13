@@ -1,0 +1,117 @@
+name: CI
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: 'read'
+      id-token: 'write' # Required for Google Auth if using Workload Identity, good practice generally
+
+    steps:
+      # 1. Checkout Code
+      - uses: actions/checkout@v4
+
+      # 2. Setup Python
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: "pip"
+
+      # 3. Authenticate using gcloud CLI directly
+      # This BYPASSES the 'Token Creator' permission issue by using the key file directly.
+      - name: Authenticate to Google Cloud
+        env:
+          GCP_CREDENTIALS: ${{ secrets.GCP_CREDENTIALS }}
+        run: |
+          # 1. Write the secret to a temporary JSON file
+          echo "$GCP_CREDENTIALS" > gha-creds.json
+          
+          # 2. Authenticate gcloud with the file
+          gcloud auth activate-service-account --key-file=gha-creds.json
+          
+          # 3. Configure Docker (optional, good practice if building containers)
+          gcloud auth configure-docker us-central1-python.pkg.dev --quiet
+
+
+      # 4. Install Poetry
+      - name: Install Poetry
+        run: pip install poetry
+
+      # 5. Configure Poetry & Install
+      - name: Install dependencies
+        run: |
+          # Generate a token using the active gcloud session
+          ACCESS_TOKEN=$(gcloud auth print-access-token)
+
+          # Manually configure the repo credentials in Poetry
+          # (This is more reliable than Env Vars for private repos)
+          poetry config http-basic.syntasa-internal-lib oauth2accesstoken "$ACCESS_TOKEN"
+
+          # Now run install
+          poetry lock
+          poetry install --no-interaction --no-root
+      # 6. Cleanup (Security)
+      - name: Remove Key File
+        if: always()
+        run: rm -f gha-creds.json
+
+      # 7. Linting
+      - name: Lint with ruff
+        run: poetry run ruff check functions/
+
+      - name: Check code formatting with black
+        run: poetry run black --check functions/
+
+      - name: Type check with mypy
+        run: |
+          cd functions
+          poetry run mypy my_function
+
+      # 8. Run Tests
+      - name: Run unit tests
+        run: |
+          poetry run pytest functions/tests/unit \
+            --cov=functions/my_function \
+            --cov-report=term-missing \
+            -v
+
+      # 9. Generate HTML Documentation with pdoc
+      - name: Build docs HTML (pdoc)
+        env:
+          PYTHONPATH: ${{ github.workspace }}/functions
+        run: |
+          poetry run pdoc \
+            -o site \
+            my_function
+
+      # 10. Install Documentation Tools
+      - name: Install documentation conversion tools
+        run: |
+          pip install beautifulsoup4 sphinx sphinxcontrib-confluencebuilder sphinx-design myst-parser
+
+      # 11. Convert HTML to RST
+      - name: Convert HTML to RST
+        run: |
+          mkdir -p docs/source
+          python3 scripts/pdoc_to_rst.py site docs/source
+
+      # 12. Publish to Confluence
+      - name: Publish documentation to Confluence
+        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+        env:
+          CONFLUENCE_URL: ${{ secrets.CONFLUENCE_URL }}
+          CONFLUENCE_USERNAME: ${{ secrets.CONFLUENCE_USERNAME }}
+          CONFLUENCE_API_KEY: ${{ secrets.CONFLUENCE_API_KEY }}
+          CONFLUENCE_SPACE_KEY: ${{ secrets.CONFLUENCE_SPACE_KEY }}
+        run: |
+          if [ ! -f docs/source/conf.py ]; then
+            echo "Error: docs/source/conf.py not found. Sphinx cannot run."
+            exit 1
+          fi
+          python3 -m sphinx -M confluence docs/source docs/_build -E -a

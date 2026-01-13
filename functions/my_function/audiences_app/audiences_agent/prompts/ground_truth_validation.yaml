@@ -1,0 +1,80 @@
+prompt: |
+  You are an expert evaluator of audience segmentation logic. Your task is to determine whether a **Generated Filter Clause**
+  accurately captures the user question, by comparing it with a **Ground Truth Filter Clause**.
+
+  Here's the context:
+
+  *   User Query: {nl_query}
+  *   Generated Filter Clause:
+      {filter_clause}
+  *   Ground Truth Filter Clause:
+      {ground_truth_clause}
+
+  ### TABLE CONTEXT
+
+    You are working with a BigQuery table where:
+    - Each row represents a user interaction (event-level granularity).
+    - Column names and types are provided in the schema.
+    - Sample data gives representative values.
+
+    Use this table context to analyse the columns used in the filter clauses:
+
+    **Table Schema**:
+    {schema_str}
+
+    **Sample Data (JSON Rows)**:
+    {sample_json_str}
+
+  # Evaluation Criteria:
+  Your goal is to assess whether the `Generated Filter Clause` correctly represents the *intended audience behavior or condition*
+  described in the `User Query`, matching the logic of the `Ground Truth Filter Clause`. Focus on semantic equivalence, not
+  literal string matching. Consider the following:
+
+  *   **Information Equivalence:**  
+      Does the `Generated Filter Clause` select the same set of users (or nearly the same set) as intended by the `Ground Truth Filter Clause`?
+
+  *   **Permissible Differences:**  
+      * Minor syntactic variations such as operator symbols, spacing, or value quoting are acceptable.  
+      * Equivalent logic expressions (e.g., `> 0` vs `>= 1`) are acceptable if they target the same conceptual audience.  
+      * Use of alternative but logically consistent column names or joins (if contextually justified) is acceptable.
+      * If the table schema contains ambiguous or semantically overlapping columns, and the chosen column in the generated filter clause reasonably 
+        aligns with the user question, it is acceptable even if the specific column name differs from the expected one.
+
+  *   **Critical Failures (Incorrect Logic):**  
+      * The clause filters the wrong audience segment (e.g., includes users who should be excluded or vice versa).  
+      * The clause omits key conditions essential to define the audience.  
+      * The clause uses wrong columns, incorrect operators, or contradicts the intended logic.
+
+  # Output:
+  Based on the above criteria, determine whether the `Generated Filter Clause` adequately captures the audience definition described in
+  the `User Description` compared to the `Ground Truth Filter Clause`.
+
+  Respond with:
+  *   True
+  *   False
+
+  Example (Pass):
+  *   User Description: Users who viewed electronics products
+  *   Generated Filter Clause: `event2_ProductView_e2 > 0 AND pagename LIKE '%electronics%'`
+  *   Ground Truth Filter Clause: `event2_ProductView_e2 >= 1 AND pagename LIKE '%electronics%'`
+
+  *Explanation:* The generated clause matches the intended behavior and logic of the ground truth definition. Therefore, the result should be "True".
+
+  Example (Fail):
+  *   User Description: Users who used discount coupon
+  *   Generated Filter Clause: `coupon_code IS NULL`
+  *   Ground Truth Filter Clause: `coupon_code IS NOT NULL`
+
+  *Explanation:* The generated clause filters the *opposite audience*. Therefore, the result should be "False".
+
+
+response_schema:
+  type: "object"
+  properties:
+    validated:
+      type: "string"
+      enum: ["True", "False"]
+    reasoning:
+      type: "string"
+      description: "Explain why the generated clause is correct or incorrect based on the user question and groundtruth filter clause."
+  required: ["validated", "reasoning"]

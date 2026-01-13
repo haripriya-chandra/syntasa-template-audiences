@@ -1,0 +1,14 @@
+# Example YAML configuration for your Syntasa function
+# You can load this using the FunctionConfig class
+
+gcp:
+  project_id: "syntasa-saas"
+  region: "us-central1"
+  dataset_id: "ccdp_demo"
+  table_name: "web_tb_event"
+  bucket_name: "syntasa-saas"
+  schema_blob_name: "donorai_attr_aud/context_dictionary.json"
+  col_values_blob_name: "donorai_attr_aud/distinct_col_values.json"
+  ai_model: "gemini-2.5-pro"
+  feedback_table: "syntasa-saas.ccdp_demo.audience_feedback"
+
