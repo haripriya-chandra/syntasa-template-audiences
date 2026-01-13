@@ -23,10 +23,10 @@ BASE_DIR = Path(__file__).resolve().parent.parent.parent
 
 # SECURITY WARNING: keep the secret key used in production secret!
 # SECRET_KEY = 'django-insecure-kpeyj_@u2=l+kubmttspam+qgbs&zcjpw2#))c$g5z0pzf_@2$'
-SECRET_KEY = 'django-insecure-kpeyj_@u2=l+kubmttspam+qgbs&zcjpw2#))c$g5z0pzf_@2$'
+SECRET_KEY = "django-insecure-kpeyj_@u2=l+kubmttspam+qgbs&zcjpw2#))c$g5z0pzf_@2$"
 
 # SECURITY WARNING: don't run with debug turned on in production!
-#DEBUG = True
+# DEBUG = True
 
 
 DEBUG = False
@@ -37,11 +37,12 @@ DEBUG = False
 #                  'audience-attributes-22795880007.us-central1.run.app',
 #                  ]
 
-ALLOWED_HOSTS = ['0.0.0.0', 
-                 'localhost', 
-                 '127.0.0.1', 
-                 'audience-attributes-22795880007.us-central1.run.app',
-                 ]
+ALLOWED_HOSTS = [
+    "0.0.0.0",
+    "localhost",
+    "127.0.0.1",
+    "audience-attributes-22795880007.us-central1.run.app",
+]
 
 
 # Application definition
