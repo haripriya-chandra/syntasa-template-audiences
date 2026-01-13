@@ -23,6 +23,7 @@ attribute_prompt_template = prompts["prompt"]
 
 base_path = os.path.dirname(__file__)
 
+
 # ----------------- Helper Functions -----------------
 def load_context_from_gcs(bucket_name: str, blob_name: str) -> Dict[str, Any]:
     client = storage.Client()
