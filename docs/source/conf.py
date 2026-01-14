@@ -2,39 +2,6 @@
 import os
 import sys
 
-
-# -----------------------------------------------------------------------------
-# 1. Load Environment Variables (Robust Path)
-# -----------------------------------------------------------------------------
-# def load_env_manually(env_path):
-#     if not os.path.exists(env_path):
-#         print(f"ERROR: .env file not found at {env_path}")
-#         return
-
-#     print(f"DEBUG: Loading .env from: {env_path}")
-#     with open(env_path, "r") as f:
-#         for line in f:
-#             line = line.strip()
-#             if not line or line.startswith("#"):
-#                 continue
-#             if "=" in line:
-#                 key, val = line.split("=", 1)
-#                 key = key.strip()
-#                 val = val.split("#", 1)[0].strip()
-#                 if (val.startswith('"') and val.endswith('"')) or (
-#                     val.startswith("'") and val.endswith("'")
-#                 ):
-#                     val = val[1:-1]
-#                 os.environ[key] = val
-
-
-# conf_dir = os.path.dirname(os.path.abspath(__file__))
-# project_root = os.path.abspath(os.path.join(conf_dir, "../../"))
-# env_path = os.path.join(project_root, ".env")
-
-# load_env_manually(env_path)
-
-
 # -----------------------------------------------------------------------------
 # 1. Project Information
 # -----------------------------------------------------------------------------
