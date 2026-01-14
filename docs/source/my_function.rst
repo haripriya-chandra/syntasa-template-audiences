@@ -1,4 +1,4 @@
-my_function
+my_function_audiences
 ===========
 
 .. module:: my_function
