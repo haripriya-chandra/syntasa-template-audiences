@@ -9,14 +9,14 @@ Mocks:
 import pytest
 from types import SimpleNamespace
 from unittest.mock import MagicMock, patch
-from my_function_audiences.audiences_app.audiences_agent.agent import run_audience_agent
+from my_function.audiences_app.audiences_agent.agent import run_audience_agent
 
 
 @pytest.mark.integration
 @patch(
-    "my_function_audiences.audiences_app.audiences_agent.agent.load_context_from_gcs"
+    "my_function.audiences_app.audiences_agent.agent.load_context_from_gcs"
 )
-@patch("my_function_audiences.audiences_app.audiences_agent.agent.generate")
+@patch("my_function.audiences_app.audiences_agent.agent.generate")
 def test_run_audience_agent_end_to_end(mock_generate, mock_load_context):
     """
     End-to-end test with mocked external dependencies.
@@ -74,9 +74,9 @@ def test_run_audience_agent_end_to_end(mock_generate, mock_load_context):
 
 @pytest.mark.integration
 @patch(
-    "my_function_audiences.audiences_app.audiences_agent.agent.load_context_from_gcs"
+    "my_function.audiences_app.audiences_agent.agent.load_context_from_gcs"
 )
-@patch("my_function_audiences.audiences_app.audiences_agent.agent.generate")
+@patch("my_function.audiences_app.audiences_agent.agent.generate")
 def test_run_audience_agent_with_simple_attribute(mock_generate, mock_load_context):
     """
     Simpler query to reduce Gemini variability.

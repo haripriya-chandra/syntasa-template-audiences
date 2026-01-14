@@ -7,7 +7,7 @@ import json
 from google.cloud import bigquery
 import sys
 import os
-from my_function_audiences.config import FunctionConfig
+from my_function.config import FunctionConfig
 
 # Load config from YAML
 config = FunctionConfig.from_yaml("config.yaml")
