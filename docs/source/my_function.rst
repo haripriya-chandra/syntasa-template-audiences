@@ -1,5 +1,7 @@
+:confluence_page_title: my_function_audiences
+
 my_function_audiences
-===========
+=====================
 
 .. module:: my_function
    :no-index:
