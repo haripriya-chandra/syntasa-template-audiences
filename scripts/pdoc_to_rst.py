@@ -2,15 +2,14 @@ import os
 import re
 import sys
 from pathlib import Path
-from bs4 import BeautifulSoup, Tag, NavigableString  # type: ignore
+from bs4 import BeautifulSoup, Tag, NavigableString # type: ignore
 from typing import Dict, Any, List, Optional, Set, Union, cast
-
 # ==========================================
 # 1. Parsing Logic
 # ==========================================
 
 
-def get_clean_source_code(tag: Tag) -> Optional[str]:
+def get_clean_source_code(tag: Tag)-> Optional[str]:
     """Extracts source code from .pdoc-code pre tag, removing line numbers."""
     pre_tag = tag.select_one(".pdoc-code pre")
     if not pre_tag:
@@ -28,9 +27,7 @@ def get_clean_source_code(tag: Tag) -> Optional[str]:
     return code_copy.get_text()
 
 
-def parse_single_member(
-    tag: Tag, parent_name: Optional[str] = None
-) -> Optional[Dict[str, Any]]:
+def parse_single_member(tag: Tag, parent_name: Optional[str] = None) -> Optional[Dict[str, Any]]:
     """Extracts details from a Class or Function HTML tag."""
     name_tag = tag.select_one(".name")
     if not name_tag:
@@ -41,12 +38,14 @@ def parse_single_member(
     # .get('class') returns list[str] | str | None
     classes: List[str] = []
     if attr_div:
-        class_attr = attr_div.get("class")
+        class_attr = attr_div.get('class')
         if isinstance(class_attr, list):
             classes = cast(List[str], class_attr)
         elif isinstance(class_attr, str):
             classes = [class_attr]
-    member_type = "class" if "class" in classes or tag.name == "section" else "function"
+    member_type = "class" if "class" in classes or tag.name == 'section' else "function"
+    
+    
 
     sig_tag = tag.select_one(".signature")
     signature = sig_tag.get_text(" ", strip=True) if sig_tag else ""
@@ -239,46 +238,29 @@ def generate_confluence_rst(data: Dict[str, Any]) -> str:
 # ==========================================
 
 
-def generate_index_file(
-    folder_path: Path, subfolders: List[str], files: List[Path], intro_content: str = ""
-) -> None:
+def generate_index_file(folder_path: Path, subfolders: List[str], files: List[Path]) -> None:
     """Generates sorted index.rst for folder navigation."""
     folder_name = (
         folder_path.name.replace("_", " ").title()
         if folder_path.name != "source"
-        else "Audience Lib Reference"
+        else "Lib Reference"
     )
 
     content = []
     content.append(folder_name)
     content.append("=" * len(folder_name))
     content.append("")
-
-    if intro_content:
-        content.append(intro_content)
-        content.append("")
-        header = "Submodules"
-        content.append(header)
-        content.append("-" * len(header))
-        content.append("")
-
     content.append(".. toctree::")
     content.append("   :maxdepth: 2")
     content.append("   :caption: Contents")
     content.append("   :glob:")
     content.append("")
-    # Check if readme.md exists in this folder (copied via CI)
-    # If found, add it to the top of the list
-    if (folder_path / "readme.md").exists():
-        content.append("   readme")
 
     for sub in sorted(subfolders):
-        content.append(f"   {sub}/index")
+        content.append(f"   /index")
 
     for path_obj in sorted(files):
-        # Prevent adding readme twice if it was somehow converted to rst
-        if path_obj.stem.lower() != "readme":
-            content.append(f"   {path_obj.stem}")
+        content.append(f"   {path_obj.stem}")
 
     index_path = folder_path / "index.rst"
     with open(index_path, "w", encoding="utf-8") as f:
@@ -295,40 +277,17 @@ def convert_recursive(input_dir: str, output_dir: str) -> None:
 
     tree_map: Dict[Path, Dict[str, Any]] = {}
 
+    # Modules to skip content generation for (prevents conflicts with folders)
+    EXCLUDED_MODULES = {
+        "syntasa_df",
+        "syntasa_common",
+        "syntasa_io",
+        "syntasa_time",
+        "syntasa_internal",
+    }
+
     print(f"Scanning {input_path}...")
 
-    # First pass: Identify package-level content
-    package_content: Dict[str, str] = {}
-
-    for html_file in input_path.rglob("*.html"):
-        if html_file.name == "index.html" and "search" in str(html_file):
-            continue
-
-        # Check if this HTML file represents a package (has a corresponding directory)
-        corresp_dir = html_file.with_suffix("")
-        is_package = corresp_dir.is_dir()
-
-        if is_package:
-            print(f"Detected package: {html_file.stem}")
-            # Register the package even if it has no content
-            rel_dir_path = html_file.relative_to(input_path).with_suffix("")
-            package_content[str(rel_dir_path)] = ""
-
-            try:
-                with open(html_file, "r", encoding="utf-8") as f:
-                    content = f.read()
-                structure = parse_html_to_structure(content)
-                if structure["module_doc"] or structure["members"]:
-                    # Generate RST but strip the title (index.rst will have its own)
-                    rst = generate_confluence_rst(structure)
-                    lines = rst.split("\n")
-                    if len(lines) > 2 and lines[1].startswith("="):
-                        rst = "\n".join(lines[2:]).strip()
-                    package_content[str(rel_dir_path)] = rst
-            except Exception as e:
-                print(f"Failed to parse package {html_file}: {e}")
-
-    # Second pass: Process all files and build tree
     for html_file in input_path.rglob("*.html"):
         if html_file.name == "index.html" and "search" in str(html_file):
             continue
@@ -338,17 +297,6 @@ def convert_recursive(input_dir: str, output_dir: str) -> None:
         target_file = output_path / rst_filename
         target_parent = target_file.parent
 
-        # Skip if this is a package (content already captured)
-        pkg_key = str(rel_path.with_suffix(""))
-        if pkg_key in package_content:
-            # Still need to ensure parent folder structure for its submodules
-            if target_file.with_suffix("") not in tree_map:
-                # This ensures the folder itself exists in the tree_map even if we don't write the file
-                folder_path = output_path / pkg_key
-                if folder_path not in tree_map:
-                    tree_map[folder_path] = {"files": [], "folders": set()}
-            continue
-
         target_parent.mkdir(parents=True, exist_ok=True)
 
         # Build Tree Map
@@ -357,13 +305,19 @@ def convert_recursive(input_dir: str, output_dir: str) -> None:
 
         # Register file for indexing
         if rst_filename.name != "index.rst":
-            tree_map[target_parent]["files"].append(rst_filename.name)
+            # Only add to file index if NOT excluded
+            if html_file.stem not in EXCLUDED_MODULES:
+                tree_map[target_parent]["files"].append(rst_filename.name)
 
             if target_parent != output_path:
                 p = target_parent.parent
                 if p not in tree_map:
                     tree_map[p] = {"files": [], "folders": set()}
                 tree_map[p]["folders"].add(target_parent.name)
+
+        if html_file.stem in EXCLUDED_MODULES:
+            print(f"Skipping content generation for parent module: {html_file.stem}")
+            continue
 
         try:
             with open(html_file, "r", encoding="utf-8") as f:
@@ -383,12 +337,7 @@ def convert_recursive(input_dir: str, output_dir: str) -> None:
     for folder, folder_data in tree_map.items():
         files = [Path(f) for f in folder_data["files"]]
         folders = list(folder_data["folders"])
-
-        # Find any package-level content for this folder
-        rel_folder = folder.relative_to(output_path)
-        intro = package_content.get(str(rel_folder), "")
-
-        generate_index_file(folder, folders, files, intro_content=intro)
+        generate_index_file(folder, folders, files)
 
 
 if __name__ == "__main__":
