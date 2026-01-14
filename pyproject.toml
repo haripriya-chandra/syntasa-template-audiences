@@ -45,11 +45,6 @@ docformat = "google"
 requires = ["poetry-core>=1.8.0"]
 build-backend = "poetry.core.masonry.api"
 
-[[tool.poetry.source]]
-name = "syntasa-internal-lib"
-url = "https://us-central1-python.pkg.dev/syntasa-saas/syntasa-internal-lib/simple/"
-priority = "explicit"
-
 [tool.pytest.ini_options]
 pythonpath = ["functions"]
 markers = [

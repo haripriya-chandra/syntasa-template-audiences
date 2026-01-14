@@ -1,0 +1,52 @@
+# .github/actions/setup-poetry-gcp/action.yml 
+name: 'Setup Poetry and GCP'
+description: 'Sets up Python, authenticates with GCP, and installs dependencies via Poetry'
+
+inputs:
+  gcp_credentials:
+    description: 'JSON Service Account Key'
+    required: true
+  python-version:
+    description: 'Python Version'
+    required: false
+    default: "3.11"
+
+runs:
+  using: "composite"
+  steps:
+    # --- Step 2: Setup Python ---
+    - name: Set up Python
+      uses: actions/setup-python@v5
+      with:
+        python-version: ${{ inputs.python-version }}
+        cache: "pip"
+
+    # --- Step 3: Authenticate GCP ---
+    - name: Authenticate to Google Cloud
+      shell: bash
+      env:
+        GCP_CREDENTIALS: ${{ inputs.gcp_credentials }}
+      run: |
+        echo "$GCP_CREDENTIALS" > gha-creds.json
+        gcloud auth activate-service-account --key-file=gha-creds.json
+        gcloud auth configure-docker us-central1-python.pkg.dev --quiet
+
+    # --- Step 4: Install Poetry ---
+    - name: Install Poetry
+      shell: bash
+      run: pip install poetry==1.8.4  # Recommended to pin version
+
+    # --- Step 5: Configure & Install ---
+    - name: Install dependencies
+      shell: bash
+      run: |
+        ACCESS_TOKEN=$(gcloud auth print-access-token)
+        poetry config http-basic.syntasa-internal-lib oauth2accesstoken "$ACCESS_TOKEN"
+        poetry lock --no-update  # Optional: ensures lock file matches pyproject.toml
+        poetry install --no-interaction --no-root
+
+    # --- Step 6: Cleanup ---
+    - name: Remove Key File
+      if: always()
+      shell: bash
+      run: rm -f gha-creds.json
