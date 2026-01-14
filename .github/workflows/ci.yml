@@ -86,8 +86,7 @@ jobs:
           PYTHONPATH: ${{ github.workspace }}/functions
         run: |
           poetry run pdoc \
-            -o site \
-            my_function
+            -o site  my_function
 
       # 10. Install Documentation Tools
       - name: Install documentation conversion tools
