@@ -246,7 +246,7 @@ def generate_index_file(
     folder_name = (
         folder_path.name.replace("_", " ").title()
         if folder_path.name != "source"
-        else "Lib Reference"
+        else "Audience Lib Reference"
     )
 
     content = []
