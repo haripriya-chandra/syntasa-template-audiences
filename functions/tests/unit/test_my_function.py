@@ -48,9 +48,12 @@ def sample_gemini_response():
 # Happy path
 # ----------------------------
 @patch(
-    "my_function_audiences.audiences_app.audiences_agent.agent.load_context_from_gcs", create=True
+    "my_function_audiences.audiences_app.audiences_agent.agent.load_context_from_gcs",
+    create=True,
 )
-@patch("my_function_audiences.audiences_app.audiences_agent.agent.generate", create=True)
+@patch(
+    "my_function_audiences.audiences_app.audiences_agent.agent.generate", create=True
+)
 def test_run_audience_agent_success(
     mock_generate,
     mock_load_context,
@@ -69,7 +72,9 @@ def test_run_audience_agent_success(
     mock_query_job.result.return_value = [{"matching_users": 42}]
     mock_client.query.return_value = mock_query_job
 
-    from my_function_audiences.audiences_app.audiences_agent.agent import run_audience_agent
+    from my_function_audiences.audiences_app.audiences_agent.agent import (
+        run_audience_agent,
+    )
 
     result = run_audience_agent(
         "Find users older than 25", config=mock_config, client=mock_client
@@ -86,9 +91,12 @@ def test_run_audience_agent_success(
 # Invalid Gemini JSON
 # ----------------------------
 @patch(
-    "my_function_audiences.audiences_app.audiences_agent.agent.load_context_from_gcs", create=True
+    "my_function_audiences.audiences_app.audiences_agent.agent.load_context_from_gcs",
+    create=True,
 )
-@patch("my_function_audiences.audiences_app.audiences_agent.agent.generate", create=True)
+@patch(
+    "my_function_audiences.audiences_app.audiences_agent.agent.generate", create=True
+)
 def test_run_audience_agent_invalid_gemini_response(
     mock_generate, mock_load_context, mock_config, sample_schema, sample_col_values
 ):
@@ -97,7 +105,9 @@ def test_run_audience_agent_invalid_gemini_response(
 
     mock_client = MagicMock()
 
-    from my_function_audiences.audiences_app.audiences_agent.agent import run_audience_agent
+    from my_function_audiences.audiences_app.audiences_agent.agent import (
+        run_audience_agent,
+    )
 
     result = run_audience_agent(
         "Invalid response test", config=mock_config, client=mock_client
@@ -114,9 +124,12 @@ def test_run_audience_agent_invalid_gemini_response(
 # BigQuery failure
 # ----------------------------
 @patch(
-    "my_function_audiences.audiences_app.audiences_agent.agent.load_context_from_gcs", create=True
+    "my_function_audiences.audiences_app.audiences_agent.agent.load_context_from_gcs",
+    create=True,
 )
-@patch("my_function_audiences.audiences_app.audiences_agent.agent.generate", create=True)
+@patch(
+    "my_function_audiences.audiences_app.audiences_agent.agent.generate", create=True
+)
 def test_run_audience_agent_bigquery_error(
     mock_generate,
     mock_load_context,
@@ -131,7 +144,9 @@ def test_run_audience_agent_bigquery_error(
     mock_client = MagicMock()
     mock_client.query.side_effect = Exception("BigQuery error")
 
-    from my_function_audiences.audiences_app.audiences_agent.agent import run_audience_agent
+    from my_function_audiences.audiences_app.audiences_agent.agent import (
+        run_audience_agent,
+    )
 
     result = run_audience_agent("BQ error test", config=mock_config, client=mock_client)
 

@@ -13,7 +13,9 @@ from my_function_audiences.audiences_app.audiences_agent.agent import run_audien
 
 
 @pytest.mark.integration
-@patch("my_function_audiences.audiences_app.audiences_agent.agent.load_context_from_gcs")
+@patch(
+    "my_function_audiences.audiences_app.audiences_agent.agent.load_context_from_gcs"
+)
 @patch("my_function_audiences.audiences_app.audiences_agent.agent.generate")
 def test_run_audience_agent_end_to_end(mock_generate, mock_load_context):
     """
@@ -71,7 +73,9 @@ def test_run_audience_agent_end_to_end(mock_generate, mock_load_context):
 
 
 @pytest.mark.integration
-@patch("my_function_audiences.audiences_app.audiences_agent.agent.load_context_from_gcs")
+@patch(
+    "my_function_audiences.audiences_app.audiences_agent.agent.load_context_from_gcs"
+)
 @patch("my_function_audiences.audiences_app.audiences_agent.agent.generate")
 def test_run_audience_agent_with_simple_attribute(mock_generate, mock_load_context):
     """
