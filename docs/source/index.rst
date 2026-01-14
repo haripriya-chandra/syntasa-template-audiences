@@ -1,9 +1,9 @@
-Lib Reference
+Audience Lib Reference
 =============
 
 .. toctree::
-   :maxdepth: 1
+   :maxdepth: 2
    :caption: Contents
    :glob:
 
-   my_function
+   my_function_audiences
