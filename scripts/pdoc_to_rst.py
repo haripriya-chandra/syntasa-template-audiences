@@ -76,29 +76,63 @@ def parse_single_member(tag: Tag, parent_name: Optional[str] = None) -> Optional
 
 def parse_html_to_structure(html_content: str) -> Dict[str, Any]:
     soup = BeautifulSoup(html_content, "html.parser")
-    data: Dict[str, Any] = {"title": "", "module_doc": "", "members": []}
 
+    data: Dict[str, Any] = {
+        "title": "",
+        "module_doc": "",
+        "members": [],
+        "module_source": "",   # ✅ NEW
+    }
+
+    # -----------------------------
+    # Module name (e.g. my_function.main)
+    # -----------------------------
     title_tag = soup.select_one(".modulename")
     if title_tag:
         data["title"] = title_tag.get_text(strip=True)
 
+    # -----------------------------
+    # Module docstring
+    # -----------------------------
     module_info = soup.select_one("section.module-info .docstring")
     if module_info:
         data["module_doc"] = module_info
 
+    # -----------------------------
+    # FULL MODULE SOURCE (CRITICAL)
+    # -----------------------------
+    module_source_block = soup.select_one(
+        "section.module-info details.source > pre"
+    )
+    if module_source_block:
+        data["module_source"] = module_source_block.get_text()
+
+    # -----------------------------
+    # Members
+    # -----------------------------
     for section in soup.select("section[id]"):
         member = parse_single_member(section)
         if member:
+            # ✅ Tag member with its defining module
+            member["module"] = data["title"]
             data["members"].append(member)
+
+            # Handle class methods
             for method_div in section.select(".classattr > .attr.function"):
-                method_wrapper = method_div.find_parent("div", class_="classattr")
+                method_wrapper = method_div.find_parent(
+                    "div", class_="classattr"
+                )
                 if method_wrapper:
                     sub = parse_single_member(
-                        method_wrapper, parent_name=member["name"]
+                        method_wrapper,
+                        parent_name=member["name"],
                     )
                     if sub:
+                        sub["module"] = data["title"]  # ✅ important
                         data["members"].append(sub)
+
     return data
+
 
 
 # ==========================================
@@ -150,32 +184,46 @@ def html_to_rst_text(tag: Any) -> str:
     return "\n\n".join(blocks)
 
 
-def generate_confluence_rst(data: Dict[str, Any]) -> str:
+def generate_confluence_rst(
+    data: Dict[str, Any],
+    module_name: str
+) -> str:
     """
     Generates RST optimized for Confluence.
-    Uses Bold Headers + Code Blocks instead of '.. class::' directives
-    to prevent parsing errors with complex types.
     """
+
     out = []
 
-   # 1. Page Title
-    base_title = data["title"]
+    base_title = data.get("title", module_name)
     title = f"{base_title} (Audiences)"
 
-    # Confluence page title
     out.append(f":confluence_page_title: {title}")
     out.append("")
-
     out.append(title)
     out.append("=" * len(title))
     out.append("")
-    # Standard module directive for index, but no content generation
-    out.append(f".. module:: {title}")
-    out.append("   :no-index:")
-    out.append("")
 
-    # 2. Module Docstring
-    if data["module_doc"]:
+    # -------------------------------
+    # ENTRYPOINT MODULE (main.py)
+    # -------------------------------
+    if module_name == "main" and data.get("module_source"):
+        header = "Function Entry Point"
+        out.append(header)
+        out.append("-" * len(header))
+        out.append("")
+
+        out.append(".. code-block:: python")
+        out.append("")
+
+        for line in data["module_source"].split("\n"):
+            out.append(f"   {line}")
+
+        return "\n".join(out)
+
+    # -------------------------------
+    # NORMAL MODULE DOCS
+    # -------------------------------
+    if data.get("module_doc"):
         out.append(html_to_rst_text(data["module_doc"]))
         out.append("")
 
@@ -184,29 +232,24 @@ def generate_confluence_rst(data: Dict[str, Any]) -> str:
         out.append("-" * len(header))
         out.append("")
 
-    # 3. Members (Collecting blocks)
     member_blocks = []
 
-    for member in data["members"]:
-        block = []
+    for member in data.get("members", []):
+        # ✅ FILTER: only document symbols defined in this module
+        if member.get("module") != base_title:
+            continue
 
-        # --- A. Name (Bold Header) ---
-        # This replaces ".. class:: Name"
-        # It renders as bold text, aligned left.
+        block = []
         block.append(f"**{member['name']}**")
         block.append("")
 
-        # --- B. Signature (Code Block) ---
-        # This prevents "invalid option block" errors caused by complex signatures
         block.append(".. code-block:: python")
         block.append("")
         block.append(f"   {member['definition']}")
         block.append("")
 
-        # --- C. Docstring ---
-        if member["doc_html"]:
+        if member.get("doc_html"):
             doc_text = html_to_rst_text(member["doc_html"])
-            # Format common headers
             for r in (
                 ("Args:", "**Args:**"),
                 ("Returns:", "**Returns:**"),
@@ -214,30 +257,25 @@ def generate_confluence_rst(data: Dict[str, Any]) -> str:
                 ("Examples:", "**Examples:**"),
             ):
                 doc_text = doc_text.replace(*r)
-
             block.append(doc_text)
             block.append("")
 
-        # --- D. View Source (Dropdown) ---
-        if member["source"]:
+        if member.get("source"):
             block.append(".. dropdown:: View Source")
             block.append("")
             block.append("   .. code-block:: python")
             block.append("")
-
-            # Indent source code 3 spaces relative to code-block
-            for s_line in member["source"].split("\n"):
-                block.append(f"      {s_line}" if s_line.strip() else "")
+            for s in member["source"].split("\n"):
+                block.append(f"      {s}" if s.strip() else "")
             block.append("")
 
         member_blocks.append("\n".join(block))
 
-    # Join members with a Transition Rule (----) in between
-    # This prevents the "Document may not end with a transition" error
     if member_blocks:
         out.append("\n\n----\n\n".join(member_blocks))
 
     return "\n".join(out)
+
 
 # def generate_confluence_rst(structure: dict, module_path: Path) -> str:
 #     """
@@ -375,7 +413,6 @@ def convert_recursive(input_dir: str, output_dir: str) -> None:
 
     tree_map: Dict[Path, Dict[str, Any]] = {}
 
-    # Modules to skip content generation for (prevents conflicts with folders)
     EXCLUDED_MODULES = {
         "syntasa_df",
         "syntasa_common",
@@ -387,26 +424,20 @@ def convert_recursive(input_dir: str, output_dir: str) -> None:
     print(f"Scanning {input_path}...")
 
     for html_file in input_path.rglob("*.html"):
+        # ✅ pdoc 14 always generates index.html → skip it
         if html_file.name == "index.html":
             continue
 
         rel_path = html_file.relative_to(input_path)
-        # rst_filename = rel_path.with_suffix(".rst")
-        rst_filename = Path(
-            rel_path.stem + "_audiences"
-            ).with_suffix(".rst")
+        rst_filename = Path(rel_path.stem + "_audiences").with_suffix(".rst")
         target_file = output_path / rst_filename
         target_parent = target_file.parent
-
         target_parent.mkdir(parents=True, exist_ok=True)
 
-        # Build Tree Map
         if target_parent not in tree_map:
             tree_map[target_parent] = {"files": [], "folders": set()}
 
-        # Register file for indexing
         if rst_filename.name != "index.rst":
-            # Only add to file index if NOT excluded
             if html_file.stem not in EXCLUDED_MODULES:
                 tree_map[target_parent]["files"].append(rst_filename.name)
 
@@ -417,7 +448,6 @@ def convert_recursive(input_dir: str, output_dir: str) -> None:
                 tree_map[p]["folders"].add(target_parent.name)
 
         if html_file.stem in EXCLUDED_MODULES:
-            print(f"Skipping content generation for parent module: {html_file.stem}")
             continue
 
         try:
@@ -425,24 +455,23 @@ def convert_recursive(input_dir: str, output_dir: str) -> None:
                 content = f.read()
 
             structure = parse_html_to_structure(content)
-            # if not structure["title"] and not structure["members"]:
-            #     continue
-            # if html_file.stem == "main":
-            #     rst_output = generate_confluence_rst({}, Path("functions/my_function/main.py"))
-            # else:
-            #     structure = parse_html_to_structure(content)
-            #     rst_output = generate_confluence_rst(structure, html_file)
-            rst_output = generate_confluence_rst(structure)
+
+            rst_output = generate_confluence_rst(
+                structure,
+                module_name=html_file.stem
+            )
+
             with open(target_file, "w", encoding="utf-8") as f:
                 f.write(rst_output)
+
         except Exception as e:
             print(f"Failed to convert {html_file}: {e}")
 
-    # Generate Indices
     for folder, folder_data in tree_map.items():
         files = [Path(f) for f in folder_data["files"]]
         folders = list(folder_data["folders"])
         generate_index_file(folder, folders, files)
+
 
 
 if __name__ == "__main__":
