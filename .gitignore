@@ -1,2 +1,4 @@
 .env
 .env.*
+site/
+docs/_build/

@@ -157,8 +157,13 @@ def generate_confluence_rst(data: Dict[str, Any]) -> str:
     """
     out = []
 
-    # 1. Page Title
+   # 1. Page Title
     title = data["title"]
+
+    # Confluence page title (prevents hierarchy collision)
+    out.append(f":confluence_page_title: {title}_audiences")
+    out.append("")
+
     out.append(title)
     out.append("=" * len(title))
     out.append("")
