@@ -428,6 +428,9 @@ def convert_recursive(input_dir: str, output_dir: str) -> None:
         if html_file.name == "index.html":
             continue
 
+        if not html_file.stem.endswith(".main") and html_file.stem != "main":
+            continue
+
         rel_path = html_file.relative_to(input_path)
         rst_filename = Path(rel_path.stem + "_audiences").with_suffix(".rst")
         target_file = output_path / rst_filename

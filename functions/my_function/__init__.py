@@ -6,6 +6,5 @@ a standard entry point compatible with the reference repo.
 """
 
 from .main import main
-from . import audiences_app
 
 __all__ = ["main"]
