@@ -387,7 +387,7 @@ def convert_recursive(input_dir: str, output_dir: str) -> None:
     print(f"Scanning {input_path}...")
 
     for html_file in input_path.rglob("*.html"):
-        if html_file.name == "index.html" and "search" in str(html_file):
+        if html_file.name == "index.html":
             continue
 
         rel_path = html_file.relative_to(input_path)
