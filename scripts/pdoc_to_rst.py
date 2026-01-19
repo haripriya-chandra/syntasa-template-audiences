@@ -239,121 +239,93 @@ def html_to_rst_text(tag: Any) -> str:
 
 #     return "\n".join(out)
 
-def generate_confluence_rst(data, module_path: Path, title: str = None) -> str:
+def generate_confluence_rst(structure: dict, module_path: Path) -> str:
     """
-    Generates RST for Confluence for any Python module, including main.py and Django apps.
-
-    Args:
-        module_path: Path to the Python file to document
-        title: Optional page title; defaults to filename
-
-    Returns:
-        str: RST-formatted documentation for Confluence
+    Generates RST for Confluence. If structure is empty, dynamically loads
+    the Python module to generate real function/class documentation.
     """
-    import importlib.util
-    import sys
+    # If no members, fall back to dynamic inspection
+    if not structure.get("members"):
+        # Load module dynamically
+        import importlib.util
+        import sys
 
-    module_name = module_path.stem
-    title = title or module_name
+        module_name = module_path.stem
+        spec = importlib.util.spec_from_file_location(module_name, str(module_path))
+        module = importlib.util.module_from_spec(spec)
+        sys.modules[module_name] = module
+        spec.loader.exec_module(module)
 
-    # Dynamically load module
-    spec = importlib.util.spec_from_file_location(module_name, str(module_path))
-    module = importlib.util.module_from_spec(spec)
-    sys.modules[module_name] = module
-    spec.loader.exec_module(module)
+        # Build structure from module
+        members = []
 
+        # Module-level functions
+        for name, func in inspect.getmembers(module, inspect.isfunction):
+            members.append({
+                "name": name,
+                "definition": f"def {name}{inspect.signature(func)}: ...",
+                "doc_html": func.__doc__ or "",
+                "source": inspect.getsource(func)
+            })
+
+        # Classes and methods
+        for cls_name, cls in inspect.getmembers(module, inspect.isclass):
+            if cls.__module__ != module_name:
+                continue
+            members.append({
+                "name": f"Class: {cls_name}",
+                "definition": "",
+                "doc_html": cls.__doc__ or "",
+                "source": ""
+            })
+            for meth_name, meth in inspect.getmembers(cls, inspect.isfunction):
+                if meth.__qualname__.split(".")[0] != cls_name:
+                    continue
+                members.append({
+                    "name": f"Method: {cls_name}.{meth_name}",
+                    "definition": f"def {meth_name}{inspect.signature(meth)}: ...",
+                    "doc_html": meth.__doc__ or "",
+                    "source": inspect.getsource(meth)
+                })
+
+        structure["members"] = members
+        structure["title"] = module_name
+
+    # --- Now continue with existing RST generation logic ---
+    # (the rest of your original generate_confluence_rst function can remain unchanged)
     out = []
 
-   # Page Title
-    base_title = data["title"]
+    # Page Title
+    base_title = structure["title"]
     title = f"{base_title} (Audiences)"
-
-    # Confluence page title
     out.append(f":confluence_page_title: {title}")
     out.append("")
     out.append(title)
     out.append("=" * len(title))
     out.append("")
 
-    # Module docstring
-    if module.__doc__:
-        out.append(html_to_rst_text(module.__doc__))
+    if structure.get("module_doc"):
+        out.append(structure["module_doc"])
         out.append("")
 
-    # API Documentation header
-    out.append("API Documentation")
-    out.append("-" * len("API Documentation"))
-    out.append("")
-
-    # --- Document module-level functions ---
-    for name, obj in inspect.getmembers(module, inspect.isfunction):
-        out.append(_generate_function_block(obj, name))
-
-    # --- Document classes and their methods ---
-    for cls_name, cls_obj in inspect.getmembers(module, inspect.isclass):
-        # Skip imported classes from other modules
-        if cls_obj.__module__ != module_name:
-            continue
-
-        block = []
-        # Class name as bold
-        block.append(f"**Class: {cls_name}**")
-        block.append("")
-
-        # Class docstring
-        if cls_obj.__doc__:
-            block.append(html_to_rst_text(cls_obj.__doc__))
-            block.append("")
-
-        # Document methods
-        for meth_name, meth_obj in inspect.getmembers(cls_obj, inspect.isfunction):
-            # Skip inherited methods
-            if meth_obj.__qualname__.split(".")[0] != cls_name:
-                continue
-            block.append(_generate_function_block(meth_obj, meth_name, cls_name))
-
-        out.append("\n".join(block))
-        out.append("\n----\n")
+    # Members
+    for member in structure["members"]:
+        out.append(f"**{member['name']}**\n")
+        out.append(".. code-block:: python\n")
+        out.append("")
+        out.append(f"   {member['definition']}\n")
+        if member.get("doc_html"):
+            out.append(member["doc_html"])
+            out.append("")
+        if member.get("source"):
+            out.append(".. dropdown:: View Source\n")
+            out.append(".. code-block:: python\n")
+            out.append("")
+            for line in member["source"].splitlines():
+                out.append(f"   {line}" if line.strip() else "")
+            out.append("")
 
     return "\n".join(out)
-
-
-def _generate_function_block(obj, name, class_name=None) -> str:
-    """
-    Helper to generate RST block for a function or method.
-    """
-    block = []
-
-    header = f"**{name}**" if not class_name else f"**Method: {class_name}.{name}**"
-    block.append(header)
-    block.append("")
-
-    # Function signature
-    sig = str(inspect.signature(obj))
-    block.append(".. code-block:: python")
-    block.append("")
-    if class_name:
-        block.append(f"   def {name}{sig}: ...")
-    else:
-        block.append(f"   def {name}{sig}: ...")
-    block.append("")
-
-    # Docstring
-    if obj.__doc__:
-        block.append(html_to_rst_text(obj.__doc__))
-        block.append("")
-
-    # Source code dropdown
-    src = inspect.getsource(obj)
-    block.append(".. dropdown:: View Source")
-    block.append("")
-    block.append("   .. code-block:: python")
-    block.append("")
-    for line in src.splitlines():
-        block.append(f"      {line}" if line.strip() else "")
-    block.append("")
-
-    return "\n".join(block)
 
 
 # ==========================================
