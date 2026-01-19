@@ -427,8 +427,12 @@ def convert_recursive(input_dir: str, output_dir: str) -> None:
             structure = parse_html_to_structure(content)
             if not structure["title"] and not structure["members"]:
                 continue
-
-            rst_output = generate_confluence_rst(structure, Path("functions/my_function/main.py"))
+            if html_file.stem == "main":
+                rst_output = generate_confluence_rst({}, Path("functions/my_function/main.py"))
+            else:
+                structure = parse_html_to_structure(content)
+                rst_output = generate_confluence_rst(structure, html_file)
+            #rst_output = generate_confluence_rst(structure, Path("functions/my_function/main.py"))
             with open(target_file, "w", encoding="utf-8") as f:
                 f.write(rst_output)
         except Exception as e:
