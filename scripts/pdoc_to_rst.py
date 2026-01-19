@@ -158,10 +158,11 @@ def generate_confluence_rst(data: Dict[str, Any]) -> str:
     out = []
 
    # 1. Page Title
-    title = data["title"]
+    base_title = data["title"]
+    title = f"{base_title} (Audiences)"
 
-    # Confluence page title (prevents hierarchy collision)
-    out.append(f":confluence_page_title: {title}_audiences")
+    # Confluence page title
+    out.append(f":confluence_page_title: {title}")
     out.append("")
 
     out.append(title)
@@ -298,7 +299,10 @@ def convert_recursive(input_dir: str, output_dir: str) -> None:
             continue
 
         rel_path = html_file.relative_to(input_path)
-        rst_filename = rel_path.with_suffix(".rst")
+        # rst_filename = rel_path.with_suffix(".rst")
+        rst_filename = Path(
+            rel_path.stem + "_audiences"
+            ).with_suffix(".rst")
         target_file = output_path / rst_filename
         target_parent = target_file.parent
 
