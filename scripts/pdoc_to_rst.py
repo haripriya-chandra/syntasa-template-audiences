@@ -187,13 +187,7 @@ def generate_confluence_rst(data: Dict[str, Any]) -> str:
     # 3. Members (Collecting blocks)
     member_blocks = []
 
-    # 
-    module_name = data["title"]  # e.g. "my_function.main"
-
     for member in data["members"]:
-    # 🚫 Skip imported/template symbols
-        if member.get("module") != module_name:
-            continue
         block = []
 
         # --- A. Name (Bold Header) ---
