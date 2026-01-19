@@ -5,6 +5,6 @@ This package wraps a Django application and exposes
 a standard entry point compatible with the reference repo.
 """
 
-from .main import main
+from .main import bootstrap_django
 
-__all__ = ["main"]
+__all__ = ["bootstrap_django"]
