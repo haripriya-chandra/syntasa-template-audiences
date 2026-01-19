@@ -66,6 +66,7 @@ jobs:
         env:
           PYTHONPATH: ${{ github.workspace }}/functions
         run: |
+          rm -rf site
           poetry run pdoc -o site my_function.main
 
       - name: Convert HTML to RST
