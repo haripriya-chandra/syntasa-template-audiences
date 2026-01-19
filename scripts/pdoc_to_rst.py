@@ -248,7 +248,7 @@ def generate_index_file(folder_path: Path, subfolders: List[str], files: List[Pa
     folder_name = (
         folder_path.name.replace("_", " ").title()
         if folder_path.name != "source"
-        else "Lib Reference"
+        else "Lib Reference - Syntasa Audiences"
     )
 
     content = []

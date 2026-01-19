@@ -1,5 +1,5 @@
-Audience Lib Reference
-=============
+Lib Reference - Syntasa Audiences
+================================
 
 .. toctree::
    :maxdepth: 2
