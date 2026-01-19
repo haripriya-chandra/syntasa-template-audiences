@@ -259,8 +259,11 @@ def generate_index_file(folder_path: Path, subfolders: List[str], files: List[Pa
     content.append(".. toctree::")
     content.append("   :maxdepth: 2")
     content.append("   :caption: Contents")
-    content.append("   :glob:")
+    # content.append("   :glob:")
     content.append("")
+
+    if (folder_path / "readme.md").exists():
+        content.append("   readme")
 
     for sub in sorted(subfolders):
         content.append(f"   /index")
