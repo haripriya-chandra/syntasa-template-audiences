@@ -1,18 +1,18 @@
 # Syntasa Function Template
 
-A template repository for building, testing, and deploying custom Syntasa functions using `syntasa-lib==1.1.8`.
+A template repository for building, testing, and deploying custom Syntasa functions.
 
 ---
 
 ## 🎯 Purpose
 
-This template provides a structured starting point for developing custom data processing functions that leverage the Syntasa internal library (`syntasa-lib`). It includes:
+This template provides a structured starting point for developing custom data processing functions. It includes:
 
 - Pre-configured project structure
 - Example function implementation
 - Unit and integration test templates
 - CI/CD workflow for automated testing
-- Poetry dependency management with syntasa-lib
+- Dependency management with Poetry
 
 ---
 
@@ -22,7 +22,6 @@ This template provides a structured starting point for developing custom data pr
 
 - Python 3.11
 - Poetry
-- Access to Syntasa internal package repository
 
 ### 1. Clone and Setup
 
@@ -40,16 +39,10 @@ poetry install
 
 ### 2. Authenticate to Syntasa Package Repository
 
-The template uses `syntasa-lib==1.1.8` from the Syntasa internal package repository.
-
 **Option 1: Using pip (for local development)**
 ```bash
 pip install keyrings.google-artifactregistry-auth
 
-# Install latest version of syntasa-lib
-pip install syntasa-lib \
-  --index-url https://us-central1-python.pkg.dev/syntasa-saas/syntasa-internal-lib/simple/ \
-  --extra-index-url https://pypi.org/simple
 ```
 
 **Option 2: Using Poetry (recommended)**
@@ -113,27 +106,6 @@ The template includes a sample function in `functions/my_function/`. Replace thi
 1. **Update `functions/my_function/main.py`** with your data processing logic
 2. **Update `functions/my_function/config.py`** with your configuration parameters
 3. **Update tests** in `functions/tests/`
-
-Example usage of syntasa-lib:
-
-```python
-from syntasa_df import to_bq, from_bq
-from syntasa_io import BigQueryAdapter
-from syntasa_common.logging import get_logger
-
-logger = get_logger(__name__)
-
-def process_data(input_query: str, output_table: str):
-    # Read from BigQuery
-    df = from_bq(input_query)
-    
-    # Process data
-    df["processed"] = df["value"] * 2
-    logger.info(f"Processed {len(df)} records")
-    
-    # Write to BigQuery
-    to_bq(df, output_table)
-```
 
 ---
 
@@ -265,36 +237,6 @@ git push origin feature/my-new-feature
 
 ---
 
-## � Using syntasa-lib
-
-This template includes `syntasa-lib==1.1.8` which provides:
-
-### Available Modules
-
-- **`syntasa_df`** - DataFrame utilities (to_bq, from_bq, to_gcs_parquet, etc.)
-- **`syntasa_io`** - I/O adapters (BigQueryAdapter, PubSubAdapter, etc.)
-- **`syntasa_common`** - Logging, error handling, utilities
-- **`syntasa_time`** - Time handling utilities
-- **`syntasa_internal`** - Internal API clients
-
-### Example Imports
-
-```python
-# DataFrame operations
-from syntasa_df import to_bq, from_bq, to_gcs_parquet, from_gcs_parquet
-
-# I/O adapters
-from syntasa_io import BigQueryAdapter, PubSubAdapter, GCSAdapter
-
-# Logging
-from syntasa_common.logging import get_logger
-
-# Time utilities
-from syntasa_time import now
-```
-
----
-
 ## 🔧 Configuration
 
 ### Environment Variables
@@ -351,7 +293,6 @@ Consult your platform documentation for specific deployment instructions.
 
 ## 📖 Additional Resources
 
-- [Syntasa Internal Library Documentation](https://confluence.syntasa.com/syntasa-lib)
 - [Poetry Documentation](https://python-poetry.org/docs/)
 - [pytest Documentation](https://docs.pytest.org/)
 

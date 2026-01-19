@@ -2,6 +2,7 @@ import os
 import re
 import sys
 from pathlib import Path
+import inspect
 from bs4 import BeautifulSoup, Tag, NavigableString # type: ignore
 from typing import Dict, Any, List, Optional, Set, Union, cast
 # ==========================================
@@ -149,94 +150,210 @@ def html_to_rst_text(tag: Any) -> str:
     return "\n\n".join(blocks)
 
 
-def generate_confluence_rst(data: Dict[str, Any]) -> str:
+# def generate_confluence_rst(data: Dict[str, Any]) -> str:
+#     """
+#     Generates RST optimized for Confluence.
+#     Uses Bold Headers + Code Blocks instead of '.. class::' directives
+#     to prevent parsing errors with complex types.
+#     """
+#     out = []
+
+#    # 1. Page Title
+#     base_title = data["title"]
+#     title = f"{base_title} (Audiences)"
+
+#     # Confluence page title
+#     out.append(f":confluence_page_title: {title}")
+#     out.append("")
+
+#     out.append(title)
+#     out.append("=" * len(title))
+#     out.append("")
+#     # Standard module directive for index, but no content generation
+#     out.append(f".. module:: {title}")
+#     out.append("   :no-index:")
+#     out.append("")
+
+#     # 2. Module Docstring
+#     if data["module_doc"]:
+#         out.append(html_to_rst_text(data["module_doc"]))
+#         out.append("")
+
+#         header = "API Documentation"
+#         out.append(header)
+#         out.append("-" * len(header))
+#         out.append("")
+
+#     # 3. Members (Collecting blocks)
+#     member_blocks = []
+
+#     for member in data["members"]:
+#         block = []
+
+#         # --- A. Name (Bold Header) ---
+#         # This replaces ".. class:: Name"
+#         # It renders as bold text, aligned left.
+#         block.append(f"**{member['name']}**")
+#         block.append("")
+
+#         # --- B. Signature (Code Block) ---
+#         # This prevents "invalid option block" errors caused by complex signatures
+#         block.append(".. code-block:: python")
+#         block.append("")
+#         block.append(f"   {member['definition']}")
+#         block.append("")
+
+#         # --- C. Docstring ---
+#         if member["doc_html"]:
+#             doc_text = html_to_rst_text(member["doc_html"])
+#             # Format common headers
+#             for r in (
+#                 ("Args:", "**Args:**"),
+#                 ("Returns:", "**Returns:**"),
+#                 ("Raises:", "**Raises:**"),
+#                 ("Examples:", "**Examples:**"),
+#             ):
+#                 doc_text = doc_text.replace(*r)
+
+#             block.append(doc_text)
+#             block.append("")
+
+#         # --- D. View Source (Dropdown) ---
+#         if member["source"]:
+#             block.append(".. dropdown:: View Source")
+#             block.append("")
+#             block.append("   .. code-block:: python")
+#             block.append("")
+
+#             # Indent source code 3 spaces relative to code-block
+#             for s_line in member["source"].split("\n"):
+#                 block.append(f"      {s_line}" if s_line.strip() else "")
+#             block.append("")
+
+#         member_blocks.append("\n".join(block))
+
+#     # Join members with a Transition Rule (----) in between
+#     # This prevents the "Document may not end with a transition" error
+#     if member_blocks:
+#         out.append("\n\n----\n\n".join(member_blocks))
+
+#     return "\n".join(out)
+
+def generate_confluence_rst(data, module_path: Path, title: str = None) -> str:
     """
-    Generates RST optimized for Confluence.
-    Uses Bold Headers + Code Blocks instead of '.. class::' directives
-    to prevent parsing errors with complex types.
+    Generates RST for Confluence for any Python module, including main.py and Django apps.
+
+    Args:
+        module_path: Path to the Python file to document
+        title: Optional page title; defaults to filename
+
+    Returns:
+        str: RST-formatted documentation for Confluence
     """
+    import importlib.util
+    import sys
+
+    module_name = module_path.stem
+    title = title or module_name
+
+    # Dynamically load module
+    spec = importlib.util.spec_from_file_location(module_name, str(module_path))
+    module = importlib.util.module_from_spec(spec)
+    sys.modules[module_name] = module
+    spec.loader.exec_module(module)
+
     out = []
 
-   # 1. Page Title
+   # Page Title
     base_title = data["title"]
     title = f"{base_title} (Audiences)"
 
     # Confluence page title
     out.append(f":confluence_page_title: {title}")
     out.append("")
-
     out.append(title)
     out.append("=" * len(title))
     out.append("")
-    # Standard module directive for index, but no content generation
-    out.append(f".. module:: {title}")
-    out.append("   :no-index:")
+
+    # Module docstring
+    if module.__doc__:
+        out.append(html_to_rst_text(module.__doc__))
+        out.append("")
+
+    # API Documentation header
+    out.append("API Documentation")
+    out.append("-" * len("API Documentation"))
     out.append("")
 
-    # 2. Module Docstring
-    if data["module_doc"]:
-        out.append(html_to_rst_text(data["module_doc"]))
-        out.append("")
+    # --- Document module-level functions ---
+    for name, obj in inspect.getmembers(module, inspect.isfunction):
+        out.append(_generate_function_block(obj, name))
 
-        header = "API Documentation"
-        out.append(header)
-        out.append("-" * len(header))
-        out.append("")
+    # --- Document classes and their methods ---
+    for cls_name, cls_obj in inspect.getmembers(module, inspect.isclass):
+        # Skip imported classes from other modules
+        if cls_obj.__module__ != module_name:
+            continue
 
-    # 3. Members (Collecting blocks)
-    member_blocks = []
-
-    for member in data["members"]:
         block = []
-
-        # --- A. Name (Bold Header) ---
-        # This replaces ".. class:: Name"
-        # It renders as bold text, aligned left.
-        block.append(f"**{member['name']}**")
+        # Class name as bold
+        block.append(f"**Class: {cls_name}**")
         block.append("")
 
-        # --- B. Signature (Code Block) ---
-        # This prevents "invalid option block" errors caused by complex signatures
-        block.append(".. code-block:: python")
-        block.append("")
-        block.append(f"   {member['definition']}")
-        block.append("")
-
-        # --- C. Docstring ---
-        if member["doc_html"]:
-            doc_text = html_to_rst_text(member["doc_html"])
-            # Format common headers
-            for r in (
-                ("Args:", "**Args:**"),
-                ("Returns:", "**Returns:**"),
-                ("Raises:", "**Raises:**"),
-                ("Examples:", "**Examples:**"),
-            ):
-                doc_text = doc_text.replace(*r)
-
-            block.append(doc_text)
+        # Class docstring
+        if cls_obj.__doc__:
+            block.append(html_to_rst_text(cls_obj.__doc__))
             block.append("")
 
-        # --- D. View Source (Dropdown) ---
-        if member["source"]:
-            block.append(".. dropdown:: View Source")
-            block.append("")
-            block.append("   .. code-block:: python")
-            block.append("")
+        # Document methods
+        for meth_name, meth_obj in inspect.getmembers(cls_obj, inspect.isfunction):
+            # Skip inherited methods
+            if meth_obj.__qualname__.split(".")[0] != cls_name:
+                continue
+            block.append(_generate_function_block(meth_obj, meth_name, cls_name))
 
-            # Indent source code 3 spaces relative to code-block
-            for s_line in member["source"].split("\n"):
-                block.append(f"      {s_line}" if s_line.strip() else "")
-            block.append("")
-
-        member_blocks.append("\n".join(block))
-
-    # Join members with a Transition Rule (----) in between
-    # This prevents the "Document may not end with a transition" error
-    if member_blocks:
-        out.append("\n\n----\n\n".join(member_blocks))
+        out.append("\n".join(block))
+        out.append("\n----\n")
 
     return "\n".join(out)
+
+
+def _generate_function_block(obj, name, class_name=None) -> str:
+    """
+    Helper to generate RST block for a function or method.
+    """
+    block = []
+
+    header = f"**{name}**" if not class_name else f"**Method: {class_name}.{name}**"
+    block.append(header)
+    block.append("")
+
+    # Function signature
+    sig = str(inspect.signature(obj))
+    block.append(".. code-block:: python")
+    block.append("")
+    if class_name:
+        block.append(f"   def {name}{sig}: ...")
+    else:
+        block.append(f"   def {name}{sig}: ...")
+    block.append("")
+
+    # Docstring
+    if obj.__doc__:
+        block.append(html_to_rst_text(obj.__doc__))
+        block.append("")
+
+    # Source code dropdown
+    src = inspect.getsource(obj)
+    block.append(".. dropdown:: View Source")
+    block.append("")
+    block.append("   .. code-block:: python")
+    block.append("")
+    for line in src.splitlines():
+        block.append(f"      {line}" if line.strip() else "")
+    block.append("")
+
+    return "\n".join(block)
 
 
 # ==========================================
@@ -339,7 +456,7 @@ def convert_recursive(input_dir: str, output_dir: str) -> None:
             if not structure["title"] and not structure["members"]:
                 continue
 
-            rst_output = generate_confluence_rst(structure)
+            rst_output = generate_confluence_rst(structure, Path("functions/my_function/main.py"))
             with open(target_file, "w", encoding="utf-8") as f:
                 f.write(rst_output)
         except Exception as e:
